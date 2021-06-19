@@ -1,7 +1,7 @@
 # Binary-Puzzle
 
 # Description
-	N*N Binary puzzle which n is an even number. There are empty spots in the puzzle that should get filled. Specific rules should be applied before filling them. Rules are:
+  N*N Binary puzzle which n is an even number. There are empty spots in the puzzle that should get filled. Specific rules should be applied before filling them. Rules are:
   Each row and column should have an equal number of 1's and 0's.
   Each row and column should have an equal string number.
   Each row and column should not have more than two 1 or 0 in a row.
