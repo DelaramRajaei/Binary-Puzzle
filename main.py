@@ -38,7 +38,7 @@ def getInput():
 if __name__ == '__main__':
     puzzle, n, emptySpots = getInput()
     csp = CSP()
-    csp.MRV_heuristic(True)
+    csp.forward_chaining(puzzle, [], emptySpots)
 # list = [1,1,0,1,0,1,0,1]
 # binary_puzzle = BinaryPuzzle()
 # print(binary_puzzle.constraint_equal_strings(list))

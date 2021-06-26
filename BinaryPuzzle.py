@@ -7,6 +7,35 @@ class BinaryPuzzle:
         self.table_row = []
         self.table_column = []
 
+    def clear(self):
+        self.table_row.clear()
+        self.table_column.clear()
+
+    def check_constraints(self, table):
+        for i in len(table):
+            row = table[i]
+            column = [row[i] for row in table]
+
+            if not self.constraint_equal_strings(row):
+                return False
+            else:
+                if not self.constraint_unique_strings('row', row):
+                    return False
+                else:
+                    if not self.constraint_repetitive_strings(row):
+                        return False
+                    else:
+                        if not self.constraint_equal_strings(column):
+                            return False
+                        else:
+                            if not self.constraint_unique_strings('column', column):
+                                return False
+                            else:
+                                if not self.constraint_repetitive_strings(column):
+                                    return False
+        self.clear()
+        return True
+
     """
     This constraint checks if a row or column has equal number of 1's and 0's
     :param table_list Row or column of the table of puzzle
@@ -24,8 +53,8 @@ class BinaryPuzzle:
         :param string String number which should be checked.
     """
 
-    def constraint_unique_strings(self, table, string):
-        if table == "row":
+    def constraint_unique_strings(self, vector_name, string):
+        if vector_name == 'row':
             table_list = self.table_row
         else:
             table_list = self.table_column
