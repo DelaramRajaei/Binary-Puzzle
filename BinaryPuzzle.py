@@ -6,11 +6,16 @@ class BinaryPuzzle:
     def __init__(self):
         self.table_row = []
         self.table_column = []
-
+    """
+        clear row and column
+    """
     def clear(self):
         self.table_row.clear()
         self.table_column.clear()
-
+        
+    """
+        check all constraints
+    """
     def check_constraints(self, table):
         for i in len(table):
             row = table[i]
