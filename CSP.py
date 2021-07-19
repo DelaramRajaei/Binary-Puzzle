@@ -1,26 +1,42 @@
-import numpy as np
+import copy
 from BinaryPuzzle import BinaryPuzzle
+# import sys
+#
+# sys.setrecursionlimit(5000)
 
 
 class CSP:
 
     def CSP_Backtracking(self, table=[], empty=[]):
+        local_table = copy.deepcopy(table)
+        local_empty = copy.deepcopy(empty)
         if len(empty) == 0 or self.check_table(table):
             return table
-        var = self.MRV_heuristic(empty)
+        var = self.MRV_heuristic(local_empty)
         for domain in var['values']:
-            table[var['key'][0]][var['key'][1]] = domain
-            print(table)
-            result = self.forward_checking(table, empty)
-            #result = self.MAC(table, empty, var['key'][0])
+            # clone_empty = empty[:]
+            local_table[var['key'][0]][var['key'][1]] = domain
+            self.print_result(local_table, len(local_table))
+            result = self.forward_checking(local_table, local_empty)
+            # print("global")
+            # self.print_result(table, len(local_table))
+            # result = self.MAC(table, empty, var['key'][0])
             if not result:
-                # TODO
-                table[var['key'][0]][var['key'][1]] = '-'
-                empty.append({'key': tuple([var['key'][0], var['key'][1]]), 'values': [0, 1]})
+                local_table = copy.deepcopy(table)
+                local_empty = copy.deepcopy(empty)
+                # empty = clone_empty
+                # table[var['key'][0]][var['key'][1]] = '-'
+                # empty.append({'key': tuple([var['key'][0], var['key'][1]]), 'values': [0, 1]})
             else:
-                result = self.CSP_Backtracking(table, empty)
+                result = self.CSP_Backtracking(local_table, local_empty)
                 if result is not None:
                     return result
+                else:
+                    local_table = copy.deepcopy(table)
+                    local_empty = copy.deepcopy(empty)
+                #     empty.append({'key': tuple([var['key'][0], var['key'][1]]), 'values': [0, 1]})
+                #     # empty = clone_empty
+                #     table[var['key'][0]][var['key'][1]] = '-'
         return None
 
     def sort_function(self, e):
@@ -54,7 +70,7 @@ class CSP:
                 return False
         return True
 
-    def MAC(self,table, empty_spot,i):
+    def MAC(self, table, empty_spot, i):
         binaryPuzzle = BinaryPuzzle()
         # Row
         # Check constrains
@@ -78,3 +94,8 @@ class CSP:
             if table[i].__contains__('-'):
                 return False
         return True
+
+    def print_result(self, puzzle, n):
+        for i in range(n):
+            print(puzzle[i])
+        print('\n')

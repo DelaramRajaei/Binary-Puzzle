@@ -27,6 +27,12 @@ class BinaryPuzzle:
                 # Uniqueness of strings
                 if self.constraint_unique_strings(table, empty, position, number):
                     return True
+                else:
+                    print("3")
+            else:
+                print("2")
+        else:
+            print("1")
         return False
 
     """
@@ -75,8 +81,7 @@ class BinaryPuzzle:
             elif string.count('-') == 1:
                 index = string.index('-')
                 for i in range(len(table_list)):
-                    # TODO
-                    if self.is_edit_distance_one(table_list[i], string):
+                    if self.is_edit_distance_one(table_list[i], string) and table_list[i].count('-') == 0:
                         var = table_list[index]
                         self.remove_variable(empty, var, vector_name, i, number)
         return True
@@ -91,20 +96,24 @@ class BinaryPuzzle:
         # Avoid IndexError for  random_list[i+1]
         for i in range(len(table_list) - 1):
             # Check if the next number is consecutive
-            if table_list[i] is '-':
-                continue
+            if table_list[i] == '-':
+                if 0 < i < (len(table_list) - 1):
+                    if table_list[i - 1] == table_list[i + 1]:
+                        self.remove_variable(empty, table_list[i - 1], position, i, number)
+                else:
+                    continue
             elif table_list[i] == table_list[i + 1]:
                 count += 1
             else:
                 if count > 2:
                     return False
                 elif count == 2:
-                    if i + 1 != len(table_list) - 1:
-                        if table_list[i + 1] is '-':
+                    if i + 1 <= len(table_list) - 1:
+                        if table_list[i + 1] == '-':
                             self.remove_variable(empty, table_list[i], position, i + 1, number)
-                    if i - count > 0:
-                        if table_list[i - count] is '-':
-                            self.remove_variable(empty, table_list[i], position, i - count, number)
+                    if i - 2 >= 0:
+                        if table_list[i - 2] == '-':
+                            self.remove_variable(empty, table_list[i], position, i - 2, number)
                 count = 1
         return True
 
@@ -113,7 +122,7 @@ class BinaryPuzzle:
         # Avoid IndexError for  random_list[i+1]
         for i in range(len(table_list) - 1):
             # Check if the next number is consecutive
-            if table_list[i] is '-':
+            if table_list[i] == '-':
                 continue
             elif table_list[i] == table_list[i + 1]:
                 count += 1

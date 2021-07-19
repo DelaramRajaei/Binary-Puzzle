@@ -86,7 +86,7 @@ if __name__ == '__main__':
         print("This puzzle can not be solved!")
     else:
         print("The answer is:")
-        print_result(puzzle, n)
+        print_result(answer, n)
 
 # list = [1,1,0,1,0,1,0,1]
 # binary_puzzle = BinaryPuzzle()
