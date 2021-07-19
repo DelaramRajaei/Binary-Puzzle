@@ -1,8 +1,8 @@
-import pygame
+# import pygame
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-GREEN = (255, 255, 102)
+GREEN = (178, 102, 255)
 cellWidth = 50
 cellHeight = 50
 MARGIN = 5

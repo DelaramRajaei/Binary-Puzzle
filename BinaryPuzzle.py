@@ -27,12 +27,6 @@ class BinaryPuzzle:
                 # Uniqueness of strings
                 if self.constraint_unique_strings(table, empty, position, number):
                     return True
-                else:
-                    print("3")
-            else:
-                print("2")
-        else:
-            print("1")
         return False
 
     """

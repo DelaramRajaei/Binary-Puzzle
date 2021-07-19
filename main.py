@@ -3,7 +3,6 @@ Binary Puzzle
 :author Hedieh Pourghasem 9733015
 :author Delaram Rajaei 9731084
 """
-from BinaryPuzzle import BinaryPuzzle
 from CSP import CSP
 from DrawPuzzle import DrawPuzzle
 
@@ -41,18 +40,6 @@ def getInput():
 
     return table, n, extractEmptySpots(table)
 
-
-def checkPuzzle(puzzle):
-    binary_puzzle = BinaryPuzzle()
-    for i in range(len(puzzle)):
-        row = puzzle[i]
-        column = [row[i] for row in puzzle]
-        if binary_puzzle.constraint_repetitive_strings(row, empty_spot, 'row', i):
-            if binary_puzzle.constraint_repetitive_strings(column, empty_spot, 'column', i):
-                return False
-    return True
-
-
 """
 Convert string to integer
 """
@@ -80,8 +67,7 @@ def print_result(puzzle, n):
 if __name__ == '__main__':
     puzzle, n, empty_spot = getInput()
     conversion(puzzle, n)
-    # result = checkPuzzle(puzzle)
-    csp = CSP()
+    csp = CSP(False)
     if csp.forward_checking(puzzle, empty_spot):
         answer = csp.CSP_Backtracking(puzzle, empty_spot)
         if answer is None:
@@ -89,19 +75,6 @@ if __name__ == '__main__':
         else:
             print("The answer is:")
             print_result(answer, n)
-    # print(csp.stages)
-    draw = DrawPuzzle(n, csp.stages)
-    draw.draw()
-    # answer = csp.CSP_Backtracking(puzzle, emptySpots)
-    # if answer is None:
-    #     print("This puzzle can not be solved!")
-    # else:
-    #     print("The answer is:")
-    #     print_result(answer, n)
+    # draw = DrawPuzzle(n, csp.stages)
+    # draw.draw()
 
-# list = [1,1,0,1,0,1,0,1]
-# binary_puzzle = BinaryPuzzle()
-# print(binary_puzzle.constraint_equal_strings(list))
-# print(binary_puzzle.constraint_repetitive_strings(list))
-# print(binary_puzzle.constraint_unique_strings("row","11000110"))
-# print(binary_puzzle.constraint_unique_strings("column","11000110"))

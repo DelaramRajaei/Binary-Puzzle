@@ -3,8 +3,9 @@ from BinaryPuzzle import BinaryPuzzle
 
 
 class CSP:
-    def __init__(self):
+    def __init__(self, constrains):
         self.stages = []
+        self.constrains_checking = constrains
 
     def CSP_Backtracking(self, table=[], empty=[]):
         local_table = copy.deepcopy(table)
@@ -12,24 +13,18 @@ class CSP:
         if len(empty) == 0 or self.check_table(table):
             return table
         selected = self.MRV_heuristic(local_empty)
-        # print(local_empty)
         for domain in selected['values']:
-            # clone_empty = empty[:]
             local_table[selected['key'][0]][selected['key'][1]] = domain
-
-            result = self.forward_checking(local_table, local_empty)
-            # result = self.MAC(table, empty, selected['key'][0])
+            if self.constrains_checking:
+                result = self.forward_checking(local_table, local_empty)
+            else:
+                result = self.MAC(table, empty, selected['key'][0])
+            self.stages.append(local_table)
             self.print_result(local_table, len(local_table), local_empty)
-            # print("global")
-            # self.print_result(table, len(local_table))
             if not result:
                 local_table = copy.deepcopy(table)
                 local_empty = copy.deepcopy(empty)
-                # empty = clone_empty
-                # table[var['key'][0]][var['key'][1]] = '-'
-                # empty.append({'key': tuple([var['key'][0], var['key'][1]]), 'values': [0, 1]})
             else:
-                # new_empty = copy.deepcopy(local_empty)
                 result = self.CSP_Backtracking(local_table, local_empty)
                 if result is not None:
                     return result
@@ -38,9 +33,6 @@ class CSP:
                     local_empty = copy.deepcopy(empty)
                     if local_empty.__contains__(selected):
                         local_empty.remove(selected)
-                #     empty.append({'key': tuple([var['key'][0], var['key'][1]]), 'values': [0, 1]})
-                #     # empty = clone_empty
-                #     table[var['key'][0]][var['key'][1]] = '-'
         return None
 
     def sort_function(self, e):
@@ -49,12 +41,6 @@ class CSP:
     def MRV_heuristic(self, empty=[]):
         empty.sort(key=self.sort_function)
         return empty.pop(0)
-        # row = self.puzzle[self.empty[0]['key'][0]]
-        # column = [row[self.empty[0]['key'][1]] for row in self.puzzle]
-        # print(empty)
-        # empty[1]['values'] = [0,1,2]
-        # empty[4]['values'] = [1]
-        # empty[0]['values'] = []
 
     def LCV_heuristic(self):
         return
@@ -70,7 +56,7 @@ class CSP:
             res = binaryPuzzle.check_constraints(row, empty_spot, 'row', i)
             if not res:
                 flag = False
-            # Row
+            # Column
             # Check constrains
             column = [row[i] for row in table]
             res = binaryPuzzle.check_constraints(column, empty_spot, 'column', i)
@@ -78,25 +64,38 @@ class CSP:
                 flag = False
         return flag
 
-    def MAC(self, table, empty_spot, i):
+    def MAC(self, table, empty_spot, index):
         binaryPuzzle = BinaryPuzzle()
         binaryPuzzle.clear()
+        changed_empty = copy.deepcopy(empty_spot)
+        flag = True
         # Row
         # Check constrains
-        row = table[i]
-        if not binaryPuzzle.check_constraints(row, empty_spot, 'row', i):
-            return False
-        # Row
+        row = table[index]
+        res = binaryPuzzle.check_constraints(row, changed_empty, 'row', index)
+        if not res:
+            flag = False
+        # Column
         # Check constrains
-        column = [row[i] for row in table]
-        if not binaryPuzzle.check_constraints(column, empty_spot, 'column', i):
-            return False
-        return True
-
-    def clone(self, table):
-        new_table = []
-        new_table.extend(table)
-        return new_table
+        column = [row[index] for row in table]
+        res = binaryPuzzle.check_constraints(column, changed_empty, 'column', index)
+        if not res:
+            flag = False
+        new_list = self.diff(empty_spot, changed_empty)
+        for i in range(len(new_list)):
+            # Row
+            # Check constrains
+            row = table[i]
+            res = binaryPuzzle.check_constraints(row, new_list, 'row', i)
+            if not res:
+                flag = False
+            # Row
+            # Check constrains
+            column = [row[i] for row in table]
+            res = binaryPuzzle.check_constraints(column, new_list, 'column', i)
+            if not res:
+                flag = False
+        return flag
 
     def check_table(self, table):
         for i in range(len(table)):
@@ -104,13 +103,7 @@ class CSP:
                 return False
         return True
 
-    # def print_result(self, puzzle, n):
-    #     for i in range(n):
-    #         print(puzzle[i])
-    #     print('\n')
-
     def print_result(self, puzzle, n, empty):
-        self.stages.append(puzzle)
         for i in range(len(puzzle)):
             for j in range(len(puzzle)):
                 if puzzle[i][j] == '-':
@@ -118,6 +111,18 @@ class CSP:
                         if empty[k]['key'] == (i, j):
                             print(empty[k]['values'], end='')
                 else:
-                    print("  ",puzzle[i][j],"   ", end='', sep='')
+                    print("  ", puzzle[i][j], "   ", end='', sep='')
             print()
         print('\n')
+
+    def diff(self, li1, li2):
+        changed = copy.deepcopy(li2)
+        for i in range(len(li1)):
+            length = len(li2)
+            for j in range(length):
+                if li1[i]['key'] == li2[j]['key']:
+                    if li1[i]['values'] == li2[j]['values']:
+                        changed.remove(li1[i])
+                    else:
+                        break
+        return changed
