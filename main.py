@@ -5,6 +5,7 @@ Binary Puzzle
 """
 from CSP import CSP
 from DrawPuzzle import DrawPuzzle
+import time
 
 """
 This function create a list of lists.
@@ -40,6 +41,7 @@ def getInput():
 
     return table, n, extractEmptySpots(table)
 
+
 """
 Convert string to integer
 """
@@ -65,16 +67,23 @@ def print_result(puzzle, n):
 
 
 if __name__ == '__main__':
+    start = time.time()
     puzzle, n, empty_spot = getInput()
     conversion(puzzle, n)
-    csp = CSP(False)
-    if csp.forward_checking(puzzle, empty_spot):
-        answer = csp.CSP_Backtracking(puzzle, empty_spot)
-        if answer is None:
-            print("This puzzle can not be solved!")
-        else:
-            print("The answer is:")
-            print_result(answer, n)
-    # draw = DrawPuzzle(n, csp.stages)
-    # draw.draw()
-
+    forwardChecking = False
+    csp = CSP(forwardChecking)
+    if forwardChecking:
+        csp.forward_checking(puzzle, empty_spot)
+    else:
+        flag, empty_spot = csp.MAC(puzzle, empty_spot)
+    answer = csp.CSP_Backtracking(puzzle, empty_spot)
+    if answer is None:
+        print("This puzzle can not be solved!")
+    else:
+        print("The answer is:")
+        print_result(answer, n)
+    end = time.time()
+    time = end - start
+    print(time)
+    draw = DrawPuzzle(n, csp.stages)
+    draw.draw()

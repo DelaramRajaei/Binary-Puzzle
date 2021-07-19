@@ -18,7 +18,7 @@ class CSP:
             if self.constrains_checking:
                 result = self.forward_checking(local_table, local_empty)
             else:
-                result = self.MAC(table, empty, selected['key'][0])
+                result, local_empty = self.MAC(local_table, local_empty)
             self.stages.append(local_table)
             self.print_result(local_table, len(local_table), local_empty)
             if not result:
@@ -64,38 +64,20 @@ class CSP:
                 flag = False
         return flag
 
-    def MAC(self, table, empty_spot, index):
+    def MAC(self, table, empty_spot):
         binaryPuzzle = BinaryPuzzle()
         binaryPuzzle.clear()
         changed_empty = copy.deepcopy(empty_spot)
+        unchanged = []
         flag = True
-        # Row
-        # Check constrains
-        row = table[index]
-        res = binaryPuzzle.check_constraints(row, changed_empty, 'row', index)
-        if not res:
-            flag = False
-        # Column
-        # Check constrains
-        column = [row[index] for row in table]
-        res = binaryPuzzle.check_constraints(column, changed_empty, 'column', index)
-        if not res:
-            flag = False
-        new_list = self.diff(empty_spot, changed_empty)
-        for i in range(len(new_list)):
-            # Row
-            # Check constrains
-            row = table[i]
-            res = binaryPuzzle.check_constraints(row, new_list, 'row', i)
-            if not res:
-                flag = False
-            # Row
-            # Check constrains
-            column = [row[i] for row in table]
-            res = binaryPuzzle.check_constraints(column, new_list, 'column', i)
-            if not res:
-                flag = False
-        return flag
+        while len(changed_empty) != 0:
+            new_list = changed_empty
+            self.forward_checking(table, new_list)
+            new_list, temp = self.diff(changed_empty, new_list)
+            unchanged.extend(temp)
+            changed_empty = new_list
+
+        return flag, unchanged
 
     def check_table(self, table):
         for i in range(len(table)):
@@ -117,12 +99,32 @@ class CSP:
 
     def diff(self, li1, li2):
         changed = copy.deepcopy(li2)
+        new_list = []
         for i in range(len(li1)):
             length = len(li2)
             for j in range(length):
                 if li1[i]['key'] == li2[j]['key']:
                     if li1[i]['values'] == li2[j]['values']:
                         changed.remove(li1[i])
+                        new_list.append(li1[i])
                     else:
                         break
-        return changed
+        return changed, new_list
+
+    def merge(self, li1, li2):
+        merrged = copy.deepcopy(li2)
+        flag = False
+        for i in range(len(li2)):
+            length = len(li1)
+            for j in range(length):
+                if li1[i]['key'] == li2[j]['key']:
+                    flag = True
+                    if li1[i]['values'] == li2[j]['values']:
+                        merrged.append(li1[i])
+                    else:
+                        merrged.append(li2[i])
+
+                        break
+                if not flag and j == length - 1:
+                    merrged.append(li1[i])
+        return merrged
