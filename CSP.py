@@ -1,8 +1,5 @@
 import copy
 from BinaryPuzzle import BinaryPuzzle
-# import sys
-#
-# sys.setrecursionlimit(5000)
 
 
 class CSP:
@@ -12,15 +9,17 @@ class CSP:
         local_empty = copy.deepcopy(empty)
         if len(empty) == 0 or self.check_table(table):
             return table
-        var = self.MRV_heuristic(local_empty)
-        for domain in var['values']:
+        selected = self.MRV_heuristic(local_empty)
+        # print(local_empty)
+        for domain in selected['values']:
             # clone_empty = empty[:]
-            local_table[var['key'][0]][var['key'][1]] = domain
-            self.print_result(local_table, len(local_table))
+            local_table[selected['key'][0]][selected['key'][1]] = domain
+
             result = self.forward_checking(local_table, local_empty)
+            # result = self.MAC(table, empty, selected['key'][0])
+            self.print_result(local_table, len(local_table), local_empty)
             # print("global")
             # self.print_result(table, len(local_table))
-            # result = self.MAC(table, empty, var['key'][0])
             if not result:
                 local_table = copy.deepcopy(table)
                 local_empty = copy.deepcopy(empty)
@@ -28,12 +27,15 @@ class CSP:
                 # table[var['key'][0]][var['key'][1]] = '-'
                 # empty.append({'key': tuple([var['key'][0], var['key'][1]]), 'values': [0, 1]})
             else:
+                # new_empty = copy.deepcopy(local_empty)
                 result = self.CSP_Backtracking(local_table, local_empty)
                 if result is not None:
                     return result
                 else:
                     local_table = copy.deepcopy(table)
                     local_empty = copy.deepcopy(empty)
+                    if local_empty.__contains__(selected):
+                        local_empty.remove(selected)
                 #     empty.append({'key': tuple([var['key'][0], var['key'][1]]), 'values': [0, 1]})
                 #     # empty = clone_empty
                 #     table[var['key'][0]][var['key'][1]] = '-'
@@ -57,21 +59,26 @@ class CSP:
 
     def forward_checking(self, table, empty_spot):
         binaryPuzzle = BinaryPuzzle()
+        binaryPuzzle.clear()
+        flag = True
         for i in range(len(table)):
             # Row
             # Check constrains
             row = table[i]
-            if not binaryPuzzle.check_constraints(row, empty_spot, 'row', i):
-                return False
+            res = binaryPuzzle.check_constraints(row, empty_spot, 'row', i)
+            if not res:
+                flag = False
             # Row
             # Check constrains
             column = [row[i] for row in table]
-            if not binaryPuzzle.check_constraints(column, empty_spot, 'column', i):
-                return False
-        return True
+            res = binaryPuzzle.check_constraints(column, empty_spot, 'column', i)
+            if not res:
+                flag = False
+        return flag
 
     def MAC(self, table, empty_spot, i):
         binaryPuzzle = BinaryPuzzle()
+        binaryPuzzle.clear()
         # Row
         # Check constrains
         row = table[i]
@@ -82,7 +89,7 @@ class CSP:
         column = [row[i] for row in table]
         if not binaryPuzzle.check_constraints(column, empty_spot, 'column', i):
             return False
-        return
+        return True
 
     def clone(self, table):
         new_table = []
@@ -95,7 +102,19 @@ class CSP:
                 return False
         return True
 
-    def print_result(self, puzzle, n):
-        for i in range(n):
-            print(puzzle[i])
+    # def print_result(self, puzzle, n):
+    #     for i in range(n):
+    #         print(puzzle[i])
+    #     print('\n')
+
+    def print_result(self, puzzle, n, empty):
+        for i in range(len(puzzle)):
+            for j in range(len(puzzle)):
+                if puzzle[i][j] == '-':
+                    for k in range(len(empty)):
+                        if empty[k]['key'] == (i, j):
+                            print(empty[k]['values'], end='')
+                else:
+                    print("  ",puzzle[i][j],"   ", end='', sep='')
+            print()
         print('\n')

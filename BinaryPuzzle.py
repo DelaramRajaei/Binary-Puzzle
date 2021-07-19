@@ -44,6 +44,18 @@ class BinaryPuzzle:
         count = table_list.count('-')
         count1 = table_list.count(1)
         count0 = table_list.count(0)
+        if count0 == len(table_list)/2:
+            for i, s in enumerate(table_list):
+                if table_list[i] == '-':
+                    self.remove_variable(empty, 0, position, i, number)
+        if count1 == len(table_list)/2:
+            for i, s in enumerate(table_list):
+                if table_list[i] == '-':
+                    self.remove_variable(empty, 1, position, i, number)
+        if count0 > len(table_list)/2:
+            return False
+        if count1 > len(table_list)/2:
+            return False
         if count >= 2:
             return True
         elif count == 1:
@@ -66,23 +78,23 @@ class BinaryPuzzle:
     :param string String number which should be checked.
     """
 
-    def constraint_unique_strings(self, string, empty, vector_name, number):
+    def constraint_unique_strings(self, table_list, empty, vector_name, number):
         if vector_name == 'row':
-            table_list = self.table_row
+            new_list = self.table_row
         else:
-            table_list = self.table_column
+            new_list = self.table_column
 
-        if table_list.__contains__(string):
+        if new_list.__contains__(table_list):
             return False
         else:
-            if not string.__contains__('-'):
-                table_list.append(string)
+            if not table_list.__contains__('-'):
+                new_list.append(table_list)
                 return True
-            elif string.count('-') == 1:
-                index = string.index('-')
-                for i in range(len(table_list)):
-                    if self.is_edit_distance_one(table_list[i], string) and table_list[i].count('-') == 0:
-                        var = table_list[index]
+            elif table_list.count('-') == 1:
+                index = table_list.index('-')
+                for i in range(len(new_list)):
+                    if self.is_edit_distance_one(new_list[i], table_list) and new_list[i].count('-') == 0:
+                        var = new_list[i][index]
                         self.remove_variable(empty, var, vector_name, i, number)
         return True
 
@@ -103,18 +115,16 @@ class BinaryPuzzle:
                 else:
                     continue
             elif table_list[i] == table_list[i + 1]:
-                count += 1
-            else:
-                if count > 2:
-                    return False
-                elif count == 2:
-                    if i + 1 <= len(table_list) - 1:
-                        if table_list[i + 1] == '-':
-                            self.remove_variable(empty, table_list[i], position, i + 1, number)
-                    if i - 2 >= 0:
-                        if table_list[i - 2] == '-':
-                            self.remove_variable(empty, table_list[i], position, i - 2, number)
-                count = 1
+                if i+2 <= len(table_list) - 1:
+                    if table_list[i] == table_list[i + 2]:
+                        return False
+
+                if i + 2 <= len(table_list) - 1:
+                    if table_list[i + 2] == '-':
+                        self.remove_variable(empty, table_list[i], position, i + 2, number)
+                if i - 1 >= 0:
+                    if table_list[i - 1] == '-':
+                        self.remove_variable(empty, table_list[i], position, i - 1, number)
         return True
 
     def check_puzzle(self, table_list):

@@ -46,8 +46,8 @@ def checkPuzzle(puzzle):
     for i in range(len(puzzle)):
         row = puzzle[i]
         column = [row[i] for row in puzzle]
-        if binary_puzzle.constraint_repetitive_strings(row, emptySpots, 'row', i):
-            if binary_puzzle.constraint_repetitive_strings(column, emptySpots, 'column', i):
+        if binary_puzzle.constraint_repetitive_strings(row, empty_spot, 'row', i):
+            if binary_puzzle.constraint_repetitive_strings(column, empty_spot, 'column', i):
                 return False
     return True
 
@@ -77,16 +77,23 @@ def print_result(puzzle, n):
 
 
 if __name__ == '__main__':
-    puzzle, n, emptySpots = getInput()
+    puzzle, n, empty_spot = getInput()
     conversion(puzzle, n)
     # result = checkPuzzle(puzzle)
     csp = CSP()
-    answer = csp.CSP_Backtracking(puzzle, emptySpots)
-    if answer is None:
-        print("This puzzle can not be solved!")
-    else:
-        print("The answer is:")
-        print_result(answer, n)
+    if csp.forward_checking(puzzle, empty_spot):
+        answer = csp.CSP_Backtracking(puzzle, empty_spot)
+        if answer is None:
+            print("This puzzle can not be solved!")
+        else:
+            print("The answer is:")
+            print_result(answer, n)
+    # answer = csp.CSP_Backtracking(puzzle, emptySpots)
+    # if answer is None:
+    #     print("This puzzle can not be solved!")
+    # else:
+    #     print("The answer is:")
+    #     print_result(answer, n)
 
 # list = [1,1,0,1,0,1,0,1]
 # binary_puzzle = BinaryPuzzle()
