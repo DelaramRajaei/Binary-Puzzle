@@ -5,6 +5,7 @@ Binary Puzzle
 """
 from BinaryPuzzle import BinaryPuzzle
 from CSP import CSP
+from DrawPuzzle import DrawPuzzle
 
 """
 This function create a list of lists.
@@ -88,6 +89,9 @@ if __name__ == '__main__':
         else:
             print("The answer is:")
             print_result(answer, n)
+    # print(csp.stages)
+    draw = DrawPuzzle(n, csp.stages)
+    draw.draw()
     # answer = csp.CSP_Backtracking(puzzle, emptySpots)
     # if answer is None:
     #     print("This puzzle can not be solved!")

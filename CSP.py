@@ -3,6 +3,8 @@ from BinaryPuzzle import BinaryPuzzle
 
 
 class CSP:
+    def __init__(self):
+        self.stages = []
 
     def CSP_Backtracking(self, table=[], empty=[]):
         local_table = copy.deepcopy(table)
@@ -108,6 +110,7 @@ class CSP:
     #     print('\n')
 
     def print_result(self, puzzle, n, empty):
+        self.stages.append(puzzle)
         for i in range(len(puzzle)):
             for j in range(len(puzzle)):
                 if puzzle[i][j] == '-':
