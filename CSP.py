@@ -10,8 +10,11 @@ class CSP:
         var = self.MRV_heuristic(empty)
         for domain in var['values']:
             table[var['key'][0]][var['key'][1]] = domain
+            print(table)
             result = self.forward_checking(table, empty)
+            #result = self.MAC(table, empty, var['key'][0])
             if not result:
+                # TODO
                 table[var['key'][0]][var['key'][1]] = '-'
                 empty.append({'key': tuple([var['key'][0], var['key'][1]]), 'values': [0, 1]})
             else:
@@ -51,7 +54,18 @@ class CSP:
                 return False
         return True
 
-    def MAC(self):
+    def MAC(self,table, empty_spot,i):
+        binaryPuzzle = BinaryPuzzle()
+        # Row
+        # Check constrains
+        row = table[i]
+        if not binaryPuzzle.check_constraints(row, empty_spot, 'row', i):
+            return False
+        # Row
+        # Check constrains
+        column = [row[i] for row in table]
+        if not binaryPuzzle.check_constraints(column, empty_spot, 'column', i):
+            return False
         return
 
     def clone(self, table):

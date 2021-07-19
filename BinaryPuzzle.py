@@ -75,6 +75,7 @@ class BinaryPuzzle:
             elif string.count('-') == 1:
                 index = string.index('-')
                 for i in range(len(table_list)):
+                    # TODO
                     if self.is_edit_distance_one(table_list[i], string):
                         var = table_list[index]
                         self.remove_variable(empty, var, vector_name, i, number)
@@ -104,7 +105,7 @@ class BinaryPuzzle:
                     if i - count > 0:
                         if table_list[i - count] is '-':
                             self.remove_variable(empty, table_list[i], position, i - count, number)
-
+                count = 1
         return True
 
     def check_puzzle(self, table_list):
