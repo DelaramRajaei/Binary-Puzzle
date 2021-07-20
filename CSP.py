@@ -68,11 +68,20 @@ class CSP:
         binaryPuzzle = BinaryPuzzle()
         binaryPuzzle.clear()
         changed_empty = copy.deepcopy(empty_spot)
+        new_table = copy.deepcopy(table)
+        self.forward_checking(table, changed_empty)
         unchanged = []
         flag = True
         while len(changed_empty) != 0:
             new_list = changed_empty
-            self.forward_checking(table, new_list)
+
+            for i in range(len(new_list)):
+                if len(new_list[i]['values']) == 1:
+                    new_table[new_list[i]['key'][0]][new_list[i]['key'][1]] = new_list[i]['values'][0]
+                    flag = self.forward_checking(new_table, new_list)
+                    if not flag:
+                        return False
+
             new_list, temp = self.diff(changed_empty, new_list)
             unchanged.extend(temp)
             changed_empty = new_list
